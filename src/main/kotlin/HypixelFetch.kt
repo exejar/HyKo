@@ -24,19 +24,42 @@ data class Player(
     @SerialName("firstLogin") val firstLogin: Long = 0,
     @SerialName("lastLogin") val lastLogin: Long = 0,
     @SerialName("lastLogout") val lastLogout: Long = 0,
-    @SerialName("networkExp") val networkExp: Long = 0,
+    @SerialName("networkExp") val networkExp: Double = 0.0,
+    @SerialName("networkLevel") val networkLevel: Double = 0.0,
+    @SerialName("mcVersionRp") val mcVersion: String = "",
     @SerialName("stats") val stats: Stats
 ) {
     /**
      * Retrieves the displayed rank of this player (Player's top-most rank in the Rank Hierarchy)
      */
-    fun getHighestRank() {
+    fun getHighestRank() : String {
+        println("$rank $monthlyPackageRank $newPackageRank $packageRank")
+        if (!rank.isDefaultRank())
+            return rank
+        if (!monthlyPackageRank.isDefaultRank())
+            return monthlyPackageRank
+        if (!newPackageRank.isDefaultRank())
+            return newPackageRank
+        if (!packageRank.isDefaultRank())
+            return packageRank
 
+        return "NONE"
     }
 
-    fun getNetworkLevel() {
-
+    fun hasRank() : Boolean {
+        return getHighestRank() != "NONE"
     }
+
+    private fun getFullNetworkExp() : Double {
+        var exp = networkExp
+        exp += ILeveling.getTotalExpToFullLevel(networkLevel) + 1
+        return exp
+    }
+    fun getFullNetworkLevel() : Double {
+        return ILeveling.getExactLevel(getFullNetworkExp())
+    }
+
+    private fun String.isDefaultRank() : Boolean { return this == "NONE" || this == "NORMAL" || this.isEmpty() }
 }
 
 suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String) : Player {
