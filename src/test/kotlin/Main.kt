@@ -8,8 +8,12 @@ suspend fun main() {
     properties.load(FileInputStream("config.properties"))
 
     /* Checking stats of player "exejar" */
-    val player = getPlayerFromUUID("98a3cecc37494981b2464fc8bb6d418c", properties.getProperty("apiKey"))
+    try {
+        val player = getPlayerFromUUID("98a3cecc37494981b2464fc8bb6d418c", properties.getProperty("apiKey"))
 
-    println("${player.displayName}'s Void Final Kills in 4v4v4v4: ${player.stats.bedwars.fourFour.voidFinalKills}")
-    println("${player.displayName}'s UHC Duels Kills: ${player.stats.duels.uhc.kills}")
+        println("${player.displayName}'s Void Final Kills in 4v4v4v4: ${player.stats.bedwars.fourFour.voidFinalKills}")
+        println("${player.displayName}'s UHC Duels Kills: ${player.stats.duels.uhc.kills}")
+    } catch (ex: HypixelAPIException) {
+        ex.printStackTrace()
+    }
 }
