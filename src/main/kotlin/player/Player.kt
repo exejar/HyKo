@@ -54,13 +54,15 @@ data class Player(
     private fun String.isDefaultRank() : Boolean { return this == "NONE" || this == "NORMAL" || this.isEmpty() }
 }
 
+val json = Json { ignoreUnknownKeys = true }
+
 @Serializable
 data class Stats(
-    @SerialName("Bedwars") val bedwars: Bedwars
+    @SerialName("Bedwars") val bedwars: Bedwars,
+    @SerialName("Duels") val duels: Duels
 )
 
 inline fun <reified T> decode(element : JsonElement) : T {
-    val json = Json { ignoreUnknownKeys = true }
     val jsonElement = element.jsonObject
     return json.decodeFromJsonElement<T>(jsonElement)
 }
