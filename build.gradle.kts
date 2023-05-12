@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.8.20"
     application
     id("org.jetbrains.kotlin.plugin.serialization") version "1.5.0"
+    `maven-publish`
 }
 
 group = "club.maxstats.hyko"
@@ -25,6 +26,10 @@ kotlin {
     jvmToolchain(8)
 }
 
-application {
-    mainClass.set("MainKt")
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+        }
+    }
 }
