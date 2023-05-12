@@ -2,6 +2,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.async
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import player.Player
@@ -11,6 +12,7 @@ import java.net.URL
 
 private val safeJson = Json { ignoreUnknownKeys = true }
 
+@Serializable
 data class PlayerResponse(
     val success: Boolean,
     val cause: String? = null,
@@ -21,7 +23,7 @@ data class PlayerResponse(
 suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String) : Player {
     val formattedURL = "https://api.hypixel.net/player?uuid=$playerUUID&key=$apiKey"
     val response = GlobalScope.async { fetchApiData(formattedURL) }.await()
-    val data = Json.decodeFromString<PlayerResponse>(response)
+    val data = safeJson.decodeFromString<PlayerResponse>(response)
 
     if (data.success) {
         return data.player
