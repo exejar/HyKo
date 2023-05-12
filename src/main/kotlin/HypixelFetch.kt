@@ -10,15 +10,29 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 private val safeJson = Json { ignoreUnknownKeys = true }
-suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String) : Player {
+
+data class PlayerResponse(
+    val success: Boolean,
+    val cause: String? = null,
+    val throttle: Boolean = false,
+    val global: Boolean = false,
+    val player: Player? = null
+)
+suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String) : Player? {
     val formattedURL = "https://api.hypixel.net/player?uuid=$playerUUID&key=$apiKey"
     val response = GlobalScope.async { fetchApiData(formattedURL) }.await()
-    val data = Json.decodeFromString<JsonObject>(response)
+    val data = Json.decodeFromString<PlayerResponse>(response)
 
-    if (data["success"]?.jsonPrimitive?.boolean == true) {
-        return safeJson.decodeFromString<Player>(data["player"]!!.jsonObject.toString())
+    return if (data.success) {
+        data.player
+            ?: throw HypixelAPIException("Failed to deserialize player object")
     } else {
-        throw RuntimeException("Failed to contact Hypixel API")
+        if (data.cause == "Invalid API key") throw ApiKeyException(apiKey)
+        else if (data.throttle) throw ApiKeyThrottleException(apiKey)
+        else if (data.cause == "Malformed UUID") throw MalformedUUIDException(playerUUID)
+        else if (data.player == null) throw PlayerNotFoundException(playerUUID)
+
+        null
     }
 }
 
