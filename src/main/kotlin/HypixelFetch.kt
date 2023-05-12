@@ -18,21 +18,20 @@ data class PlayerResponse(
     val global: Boolean = false,
     val player: Player? = null
 )
-suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String) : Player? {
+suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String) : Player {
     val formattedURL = "https://api.hypixel.net/player?uuid=$playerUUID&key=$apiKey"
     val response = GlobalScope.async { fetchApiData(formattedURL) }.await()
     val data = Json.decodeFromString<PlayerResponse>(response)
 
-    return if (data.success) {
-        data.player
-            ?: throw HypixelAPIException("Failed to deserialize player object")
+    if (data.success) {
+        return data.player
+            ?: throw HypixelAPIException("Failed to deserialize player $playerUUID")
     } else {
         if (data.cause == "Invalid API key") throw ApiKeyException(apiKey)
         else if (data.throttle) throw ApiKeyThrottleException(apiKey)
         else if (data.cause == "Malformed UUID") throw MalformedUUIDException(playerUUID)
         else if (data.player == null) throw PlayerNotFoundException(playerUUID)
-
-        null
+        else throw HypixelAPIException("Failed to contact Hypixel API")
     }
 }
 
