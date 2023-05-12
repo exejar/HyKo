@@ -1,11 +1,97 @@
 package player
 
 import kotlinx.serialization.*
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonObject
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializer(forClass = Duels::class)
 object DuelsSerializer : KSerializer<Duels> {
+    override fun deserialize(decoder: Decoder): Duels {
+        val decoder = decoder as? JsonDecoder
+            ?: throw SerializationException("Expected JsonDecoder for ${decoder::class}")
 
+        val duels = decoder.decodeJsonElement() as JsonObject
+        return Duels(
+            decode<OverallDuels>(duels),
+            decode<ArenaDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_DUEL_ARENA.getAPIName())),
+            decode<BlitzDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BLITZ_DUEL.getAPIName())),
+            decode<BowDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BOW_DUEL.getAPIName())),
+            decode<BowSpleefDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BOWSPLEEF_DUEL.getAPIName())),
+            decode<BoxingDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BOXING_DUEL.getAPIName())),
+            decode<BridgeDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_DUEL.getAPIName())),
+            decode<BridgeDoublesDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_DOUBLES.getAPIName())),
+            decode<Bridge3v3Duels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_THREES.getAPIName())),
+            decode<Bridge4v4Duels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_FOUR.getAPIName())),
+            decode<BridgeFourTwoDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_2V2V2V2.getAPIName())),
+            decode<BridgeFourThreeDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_3V3V3V3.getAPIName())),
+            decode<BridgeCTF3v3Duels>(duels.getAllWithPrefix(DuelsNames.DUELS_CAPTURE_THREES.getAPIName())),
+            decode<BridgeTournamentDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_BRIDGE_TOURNAMENT.getAPIName())),
+            decode<ClassicDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_CLASSIC_DUEL.getAPIName())),
+            decode<ComboDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_COMBO_DUEL.getAPIName())),
+            decode<MegaWallsDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_MW_DUEL.getAPIName())),
+            decode<MegaWallsDoublesDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_MW_DOUBLES.getAPIName())),
+            decode<MegaWallsTeamsDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_MW_FOUR.getAPIName())),
+            decode<NoDebuffDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_POTION_DUEL.getAPIName())),
+            decode<OPDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_OP_DUEL.getAPIName())),
+            decode<OPDoublesDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_OP_DOUBLES.getAPIName())),
+            decode<ParkourDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_PARKOUR_EIGHT.getAPIName())),
+            decode<SkywarsDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_SW_DUEL.getAPIName())),
+            decode<SkywarsDoublesDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_SW_DOUBLES.getAPIName())),
+            decode<SkywarsTeamsDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_SW_FOUR.getAPIName())),
+            decode<SkywarsTournamentDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_SW_TOURNAMENT.getAPIName())),
+            decode<SumoDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_SUMO_DUEL.getAPIName())),
+            decode<SumoTournamentDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_SUMO_TOURNAMENT.getAPIName())),
+            decode<UHCDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_UHC_DUEL.getAPIName())),
+            decode<UHCDoublesDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_UHC_DOUBLES.getAPIName())),
+            decode<UHCTeamsDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_UHC_FOUR.getAPIName())),
+            decode<UHCDeathmatchDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_UHC_MEETUP.getAPIName())),
+            decode<UHCTournamentDuels>(duels.getAllWithPrefix(DuelsNames.DUELS_UHC_TOURNAMENT.getAPIName()))
+        )
+    }
+}
+
+enum class DuelsNames(val formattedName: String) {
+    DUELS_DUEL_ARENA("ArenaDuels"),
+    DUELS_BLITZ_DUEL("BlitzDuels"),
+    DUELS_BOW_DUEL("BowDuels"),
+    DUELS_BOWSPLEEF_DUEL("BowSpleefDuels"),
+    DUELS_BOXING_DUEL("BoxingDuels"),
+    DUELS_BRIDGE_THREES("Bridge3v3Duels"),
+    DUELS_CAPTURE_THREES("BridgeCTF3v3Duels"),
+    DUELS_BRIDGE_DOUBLES("BridgeDoublesDuels"),
+    DUELS_BRIDGE_DUEL("BridgeDuels"),
+    DUELS_BRIDGE_3V3V3V3("BridgeFourThreeDuels"),
+    DUELS_BRIDGE_2V2V2V2("BridgeFourTwoDuels"),
+    DUELS_BRIDGE_FOUR("BridgeTeamsDuels"),
+    DUELS_BRIDGE_TOURNAMENT("BridgeTournamentDuels"),
+    DUELS_CLASSIC_DUEL("ClassicDuels"),
+    DUELS_COMBO_DUEL("ComboDuels"),
+    DUELS_MW_DOUBLES("MegaWallsDoublesDuels"),
+    DUELS_MW_DUEL("MegaWallsDuels"),
+    DUELS_MW_FOUR("MegaWallsTeamsDuels"),
+    DUELS_POTION_DUEL("NoDebuffDuels"),
+    DUELS_OP_DOUBLES("OPDoublesDuels"),
+    DUELS_OP_DUEL("OPDuels"),
+    DUELS_PARKOUR_EIGHT("ParkourDuels"),
+    DUELS_SW_DOUBLES("SkywarsDoublesDuels"),
+    DUELS_SW_DUEL("SkywarsDuels"),
+    DUELS_SW_FOUR("SkywarsTeamsDuels"),
+    DUELS_SW_TOURNAMENT("SkywarsTournamentDuels"),
+    DUELS_SUMO_DUEL("SumoDuels"),
+    DUELS_SUMO_TOURNAMENT("SumoTournamentDuels"),
+    DUELS_UHC_MEETUP("UHCDeathmatchDuels"),
+    DUELS_UHC_DOUBLES("UHCDoublesDuels"),
+    DUELS_UHC_DUEL("UHCDuels"),
+    DUELS_UHC_FOUR("UHCTeamsDuels"),
+    DUELS_UHC_TOURNAMENT("UHCTournamentDuels");
+
+    override fun toString(): String {
+        return formattedName
+    }
+
+    fun getAPIName() : String = this.name.replace("DUELS_", "").lowercase()
 }
 
 @Serializable(with = DuelsSerializer::class)
@@ -17,7 +103,7 @@ data class Duels(
     val bowSpleef: BowSpleefDuels,
     val boxing: BoxingDuels,
     val bridge: BridgeDuels,
-    val bridge2v2: Bridge2v2Duels,
+    val bridgeDoubles: BridgeDoublesDuels,
     val bridge3v3: Bridge3v3Duels,
     val bridge4v4: Bridge4v4Duels,
     val bridge2v2v2v2: BridgeFourTwoDuels,
@@ -27,20 +113,21 @@ data class Duels(
     val classic: ClassicDuels,
     val combo: ComboDuels,
     val megawalls: MegaWallsDuels,
-    val megwalls2v2: MegaWalls2v2Duels,
-    val megawalls4v4: MegaWallsTeamsDuels,
+    val megawallsDoubles: MegaWallsDoublesDuels,
+    val megawallsTeams: MegaWallsTeamsDuels,
     val noDebuff: NoDebuffDuels,
     val op: OPDuels,
-    val op2v2: OP2v2Duels,
+    val opDoubles: OPDoublesDuels,
     val parkour: ParkourDuels,
     val skywars: SkywarsDuels,
-    val skywars2v2: Skywars2v2Duels,
+    val skywarsDoubles: SkywarsDoublesDuels,
+    val skywarsTeamsDuels: SkywarsTeamsDuels,
     val skywarsTournament: SkywarsTournamentDuels,
     val sumo: SumoDuels,
     val sumoTournament: SumoTournamentDuels,
     val uhc: UHCDuels,
-    val uhc2v2: UHC2v2Duels,
-    val uhc4v4: UHCTeamsDuels,
+    val uhcDoubles: UHCDoublesDuels,
+    val uhcTeams: UHCTeamsDuels,
     val uhcDeathmatch: UHCDeathmatchDuels,
     val uhcTournament: UHCTournamentDuels,
 )
@@ -186,7 +273,7 @@ data class BridgeCTF3v3Duels(
     @SerialName("capture_threes_golden_apples_eaten") val goldenApplesEaten : Int = 0,
 )
 @Serializable
-data class Bridge2v2Duels(
+data class BridgeDoublesDuels(
     @SerialName("bridge_doubles_wins") val wins : Int = 0,
     @SerialName("bridge_doubles_deaths") val deaths : Int = 0,
     @SerialName("bridge_doubles_goals") val goals : Int = 0,
@@ -348,7 +435,7 @@ data class ComboDuels(
     @SerialName("combo_duel_bow_hits") val bowHits : Int = 0,
 )
 @Serializable
-data class MegaWalls2v2Duels(
+data class MegaWallsDoublesDuels(
     @SerialName("mw_doubles_melee_hits") val meleeHits : Int = 0,
     @SerialName("mw_doubles_health_regenerated") val healthRegenerated : Int = 0,
     @SerialName("mw_doubles_damage_dealt") val damageDealt : Int = 0,
@@ -449,7 +536,7 @@ data class NoDebuffDuels(
     @SerialName("best_winstreak_mode_potion_duel") val bestWinstreak : Int = 0,
 )
 @Serializable
-data class OP2v2Duels(
+data class OPDoublesDuels(
     @SerialName("duels_winstreak_best_op_doubles") val duelsWinstreakBest : Int = 0,
     @SerialName("op_doubles_health_regenerated") val healthRegenerated : Int = 0,
     @SerialName("op_doubles_melee_hits") val meleeHits : Int = 0,
@@ -492,7 +579,7 @@ data class ParkourDuels(
     @SerialName("best_winstreak_mode_parkour_eight") val bestWinstreak : Int = 0,
 )
 @Serializable
-data class Skywars2v2Duels(
+data class SkywarsDoublesDuels(
     @SerialName("duels_winstreak_best_sw_doubles") val duelsWinstreakBest : Int = 0,
     @SerialName("sw_doubles_melee_swings") val meleeSwings : Int = 0,
     @SerialName("sw_doubles_kit_wins") val kitWins : Int = 0,
@@ -580,9 +667,10 @@ data class SkywarsDuels(
     @SerialName("sw_duel_zookeeper_kit_wins") val zookeeperKitWins : Int = 0,
     @SerialName("sw_duel_paladin_kit_wins") val paladinKitWins : Int = 0,
 )
-//@Serializable
-//data class SkywarsTeamsDuels(
-//)
+@Serializable
+data class SkywarsTeamsDuels(
+    @SerialName("") val kills : Int = 0
+)
 @Serializable
 data class SkywarsTournamentDuels(
     @SerialName("sw_tournament_health_regenerated") val healthRegenerated : Int = 0,
@@ -640,7 +728,7 @@ data class UHCDeathmatchDuels(
     @SerialName("duels_winstreak_best_uhc_meetup") val duelsWinstreakBest : Int = 0,
 )
 @Serializable
-data class UHC2v2Duels(
+data class UHCDoublesDuels(
     @SerialName("uhc_doubles_losses") val losses : Int = 0,
     @SerialName("uhc_doubles_kills") val kills : Int = 0,
     @SerialName("uhc_doubles_bow_shots") val bowShots : Int = 0,
@@ -736,7 +824,7 @@ data class OverallDuels(
     @SerialName("deaths") val deaths : Int = 0,
     @SerialName("chat_enabled") val chatEnabled : String = "",
     @SerialName("coins") val coins : Int = 0,
-    @SerialName("active_cosmetictitle") val activeCosmetictitle : String = "",
+    @SerialName("active_cosmetictitle") val activeCosmeticTitle : String = "",
     @SerialName("duels_chests") val duelsChests : Int = 0,
     @SerialName("Duels_openedChests") val duelsOpenedchests : Int = 0,
     @SerialName("Duels_openedCommons") val duelsOpenedcommons : Int = 0,
