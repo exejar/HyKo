@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.8.20"
+    kotlin("plugin.serialization") version "1.8.21"
     application
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.5.0"
     `maven-publish`
 }
 
@@ -14,8 +14,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 }
 
 tasks.test {
