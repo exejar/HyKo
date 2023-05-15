@@ -1,3 +1,5 @@
+package club.maxstats.hyko
+
 open class HypixelAPIException(message: String) : Exception(message)
 class PlayerNotFoundException(playerUUID: String) : HypixelAPIException("Player $playerUUID not found")
 class MalformedUUIDException(playerUUID: String) : HypixelAPIException("UUID $playerUUID is malformed")

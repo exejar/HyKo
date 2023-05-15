@@ -1,4 +1,4 @@
-package player
+package club.maxstats.hyko
 
 import kotlinx.serialization.*
 import kotlinx.serialization.encoding.Decoder
@@ -13,13 +13,13 @@ object BedwarsSerializer : KSerializer<Bedwars> {
 
         val bedwars = decoder.decodeJsonElement() as JsonObject
         return Bedwars(
-            decode<OverallBedwars>(bedwars),
-            decode<FourFourBedwars>(bedwars.getAllWithPrefix("four_four")),
-            decode<FourThreeBedwars>(bedwars.getAllWithPrefix("four_three")),
-            decode<EightTwoBedwars>(bedwars.getAllWithPrefix("eight_two")),
-            decode<EightOneBedwars>(bedwars.getAllWithPrefix("eight_one")),
-            decode<TwoFourBedwars>(bedwars.getAllWithPrefix("two_four")),
-            decode<CastleBedwars>(bedwars.getAllWithPrefix("castle"))
+            decode(bedwars),
+            decode(bedwars.getAllWithPrefix("four_four")),
+            decode(bedwars.getAllWithPrefix("four_three")),
+            decode(bedwars.getAllWithPrefix("eight_two")),
+            decode(bedwars.getAllWithPrefix("eight_one")),
+            decode(bedwars.getAllWithPrefix("two_four")),
+            decode(bedwars.getAllWithPrefix("castle"))
         )
     }
 }

@@ -1,11 +1,11 @@
-import player.DuelsNames
-import java.io.FileInputStream
+import club.maxstats.hyko.HypixelAPIException
+import club.maxstats.hyko.getPlayerFromUUID
+import java.io.File
 import java.util.*
 
 suspend fun main() {
     /* Obviously use your own API Key, this is here so that I can test without exposing my API Key */
-    val properties = Properties()
-    properties.load(FileInputStream("config.properties"))
+    val properties = Properties().apply { load(File("config.properties").inputStream()) }
 
     /* Checking stats of player "exejar" */
     try {
