@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 import java.net.HttpURLConnection
 import java.net.URL
 
-const val hypixelBaseURL = "https://api.hypixel.net/"
+const val hypixelBaseURL = "https://api.hypixel.net"
 private val safeJson = Json { ignoreUnknownKeys = true }
 
 @Serializable
