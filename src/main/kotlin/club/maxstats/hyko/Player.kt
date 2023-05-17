@@ -47,8 +47,8 @@ val json = Json { ignoreUnknownKeys = true }
 
 @Serializable
 data class Stats(
-    @SerialName("Bedwars") val bedwars: Bedwars,
-    @SerialName("Duels") val duels: Duels
+    @SerialName("Bedwars") val bedwars: Bedwars = Bedwars(),
+    @SerialName("Duels") val duels: Duels = Duels()
 )
 
 inline fun <reified T> decode(element: JsonElement): T = json.decodeFromJsonElement(element)

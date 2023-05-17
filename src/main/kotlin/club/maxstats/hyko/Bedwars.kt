@@ -26,13 +26,13 @@ object BedwarsSerializer : KSerializer<Bedwars> {
 
 @Serializable(with = BedwarsSerializer::class)
 data class Bedwars(
-    val overall: OverallBedwars,
-    val fourFour: FourFourBedwars,
-    val fourThree: FourThreeBedwars,
-    val eightTwo: EightTwoBedwars,
-    val eightOne: EightOneBedwars,
-    val twoFour: TwoFourBedwars,
-    val castle: CastleBedwars
+    val overall: OverallBedwars = OverallBedwars(),
+    val fourFour: FourFourBedwars = FourFourBedwars(),
+    val fourThree: FourThreeBedwars = FourThreeBedwars(),
+    val eightTwo: EightTwoBedwars = EightTwoBedwars(),
+    val eightOne: EightOneBedwars = EightOneBedwars(),
+    val twoFour: TwoFourBedwars = TwoFourBedwars(),
+    val castle: CastleBedwars = CastleBedwars()
 )
 
 @Serializable
