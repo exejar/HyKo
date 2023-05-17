@@ -20,7 +20,8 @@ data class Player(
     @SerialName("networkExp") val networkExp: Double = 0.0,
     @SerialName("networkLevel") val networkLevel: Double = 0.0,
     @SerialName("mcVersionRp") val mcVersion: String = "",
-    @SerialName("stats") val stats: Stats
+    @SerialName("stats") val stats: Stats,
+    @SerialName("achievements") val achievements: Achievements
 ) {
     /**
      * Retrieves the displayed rank of this player (Player's top-most rank in the Rank Hierarchy)
