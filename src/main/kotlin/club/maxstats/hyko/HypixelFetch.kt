@@ -4,6 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -16,7 +18,8 @@ data class PlayerResponse(
     val cause: String? = null,
     val throttle: Boolean = false,
     val global: Boolean = false,
-    val player: Player? = null
+    val player: Player? = null,
+    val meta: HypixelMetadata
 )
 
 suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String): Player {
@@ -43,6 +46,16 @@ private suspend fun fetchAPIData(url: String, apiKey: String) = withContext(Disp
             throw HypixelAPIException("Failed to fetch data from URL $url. Response code: $responseCode")
         }
 
-        inputStream.bufferedReader().use { it.readText() }.also { disconnect() }
+        inputStream.bufferedReader().use {
+          val response =   it.readText()
+            val metaData = buildJsonObject {
+                put("retryAfter", getHeaderField("retry-after"))
+                put("rateLimitRemaining", getHeaderField("ratelimit-remaining"))
+                put("rateLimitReset",getHeaderField("ratelimit-reset"))
+            }
+           response.dropLast(1).plus(",\"meta\":$metaData").plus("}")
+        }.also {
+            disconnect()
+        }
     }
 }
