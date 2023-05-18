@@ -21,7 +21,7 @@ data class PlayerResponse(
 
 suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String): Player {
     // FIXME: ktor allows you to serialize more efficiently
-    val response = fetchAPIData("$hypixelBaseURL/player?uuid=$playerUUID&key=$apiKey")
+    val response = fetchAPIData("$hypixelBaseURL/player?uuid=$playerUUID", apiKey)
     val data = safeJson.decodeFromString<PlayerResponse>(response)
 
     return when {
@@ -34,12 +34,14 @@ suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String): Player {
     }
 }
 
-private suspend fun fetchAPIData(url: String) = withContext(Dispatchers.IO) {
+private suspend fun fetchAPIData(url: String, apiKey: String) = withContext(Dispatchers.IO) {
     with(URL(url).openConnection() as HttpURLConnection) {
+        setRequestProperty("api-key", apiKey)
         connect()
 
-        if (responseCode != HttpURLConnection.HTTP_OK)
+        if (responseCode != HttpURLConnection.HTTP_OK) {
             throw HypixelAPIException("Failed to fetch data from URL $url. Response code: $responseCode")
+        }
 
         inputStream.bufferedReader().use { it.readText() }.also { disconnect() }
     }
