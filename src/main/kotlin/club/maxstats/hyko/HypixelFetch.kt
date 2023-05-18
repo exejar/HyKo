@@ -22,23 +22,34 @@ data class PlayerResponse(
     val meta: HypixelMetadata
 )
 
+@Deprecated("This has been deprecated in favour of more intuitive method name.", ReplaceWith("getPlayerByUuid"), DeprecationLevel.WARNING)
 suspend fun getPlayerFromUUID(playerUUID: String, apiKey: String): Player {
-    // FIXME: ktor allows you to serialize more efficiently
-    val response = fetchAPIData("$hypixelBaseURL/player?uuid=$playerUUID", apiKey)
-    val data = safeJson.decodeFromString<PlayerResponse>(response)
+    return getPlayerByUuid(playerUUID, apiKey)
+}
+
+/**
+ * Fetches a player by their UUID.
+ * @param playerUuid A Minecraft UUID, dashe or undashed
+ * @param apiKey A valid Hypixel API Key.
+ * @return Player
+ */
+suspend fun getPlayerByUuid(playerUuid: String, apiKey: String): Player {
+    // FIXME: ktor allows you to serialize more efficiently - Kept this comment
+    val response = fetchHypixelResponse("player?uuid=$playerUuid", apiKey)
+    val decodedJson = safeJson.decodeFromString<PlayerResponse>(response)
 
     return when {
-        data.success -> data.player ?: throw HypixelAPIException("Failed to deserialize player $playerUUID")
-        data.cause == "Invalid API key" -> throw ApiKeyException(apiKey)
-        data.throttle -> throw ApiKeyThrottleException(apiKey)
-        data.cause == "Malformed UUID" -> throw MalformedUUIDException(playerUUID)
-        data.player == null -> throw PlayerNotFoundException(playerUUID)
+        decodedJson.success -> decodedJson.player ?: throw HypixelAPIException("Failed to deserialize player $playerUuid")
+        decodedJson.cause == "Invalid API key" -> throw ApiKeyException(apiKey)
+        decodedJson.throttle -> throw ApiKeyThrottleException(apiKey)
+        decodedJson.cause == "Malformed UUID" -> throw MalformedUUIDException(playerUuid)
+        decodedJson.player == null -> throw PlayerNotFoundException(playerUuid)
         else -> throw HypixelAPIException("Failed to contact Hypixel API")
     }
 }
 
-private suspend fun fetchAPIData(url: String, apiKey: String) = withContext(Dispatchers.IO) {
-    with(URL(url).openConnection() as HttpURLConnection) {
+private suspend fun fetchHypixelResponse(urlPath: String, apiKey: String) = withContext(Dispatchers.IO) {
+    with(URL("https://api.hypixel.net/$urlPath").openConnection() as HttpURLConnection) {
         setRequestProperty("api-key", apiKey)
         connect()
 
@@ -47,13 +58,13 @@ private suspend fun fetchAPIData(url: String, apiKey: String) = withContext(Disp
         }
 
         inputStream.bufferedReader().use {
-          val response =   it.readText()
+            val response = it.readText()
             val metaData = buildJsonObject {
                 put("retryAfter", getHeaderField("retry-after"))
                 put("rateLimitRemaining", getHeaderField("ratelimit-remaining"))
-                put("rateLimitReset",getHeaderField("ratelimit-reset"))
+                put("rateLimitReset", getHeaderField("ratelimit-reset"))
             }
-           response.dropLast(1).plus(",\"meta\":$metaData").plus("}")
+            response.dropLast(1).plus(",\"meta\":$metaData").plus("}")
         }.also {
             disconnect()
         }
